@@ -2,10 +2,14 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const mongoURI = 'mongodb+srv://jainrohit0002:qwert12345@cluster0.hpx1zq5.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
+require('dotenv').config();
+
+const mongoURI = `mongodb+srv://jainrohit0002:${process.env.MONGO_URI_PW}@cluster0.hpx1zq5.mongodb.net/?retryWrites=true&w=majority`;
 
 // Connect to MongoDB
 mongoose.connect(mongoURI, {
+     useNewUrlParser: true,
+     useUnifiedTopology: true,
 })
      .then(() => {
           console.log('Database connected successfully');
@@ -76,9 +80,9 @@ app.post('/api/users', async (req, res) => {
      try {
           const user = new User(req.body);
           await user.save();
-          res.status(201).send(user);
+          res.status(201).json(user);
      } catch (error) {
-          res.status(400).send(error.message);
+          res.status(400).json({ error: error.message });
      }
 });
 
@@ -86,15 +90,13 @@ app.post('/api/users', async (req, res) => {
 app.get('/api/users', async (req, res) => {
      try {
           const users = await User.find();
-          res.status(200).send(users);
+          res.status(200).json(users);
      } catch (error) {
-          res.status(500).send(error.message);
+          res.status(500).json({ error: error.message });
      }
 });
 
 app.listen(3000, () => {
      console.log('Server is running on port 3000');
+     console.log(process.env.MONGO_URI_PW)
 });
-
-
-// mongodb+srv://jainrohit0002:<password>@cluster0.hpx1zq5.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
